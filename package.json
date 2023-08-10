@@ -2,9 +2,11 @@
   "name": "contacthub",
   "version": "1.0.0",
   "description": "A repository for contacts",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "start": "npx tsc && node ./build/app.js",
+    "build": "npx tsc",
+    "start": "node dist/app.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/app.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -30,6 +32,8 @@
   "devDependencies": {
     "@types/express": "^4.17.17",
     "@types/node": "^20.4.9",
+    "concurrently": "^8.2.0",
+    "nodemon": "^3.0.1",
     "typescript": "^5.1.6"
   }
 }
