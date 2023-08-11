@@ -1,4 +1,6 @@
+.vscode
 build
 node_modules
 *.js
 .env
+mongodb
