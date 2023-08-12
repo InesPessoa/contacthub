@@ -3,8 +3,6 @@ import mongoose, { Document, Schema, model } from 'mongoose';
 export interface IEmail extends Document {
   email: string;
   description?: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 const emailSchema = new Schema<IEmail>({

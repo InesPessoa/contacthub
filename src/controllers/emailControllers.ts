@@ -5,17 +5,9 @@ import { IEmail, Email } from '../models/emailModel';
 //create email, read email by id, update email by id, delete email
 
 //create a create controller
-export const createEmail = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const createEmail = async (req: Request, res: Response) => {
   try {
-    const body = req.body as Required<Pick<IEmail, 'email'>> & Partial<IEmail>;
-    const email: IEmail = new Email({
-      email: body.email,
-      description: body.description,
-    });
-    const newEmail: IEmail = await email.save();
+    const newEmail = await Email.create(req.body);
     res.status(201).json({ message: 'Email added', email: newEmail });
   } catch (error) {
     throw error;
