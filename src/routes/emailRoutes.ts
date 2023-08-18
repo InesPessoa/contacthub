@@ -1,8 +1,7 @@
 import { Request, Response, Router } from 'express';
-import { createEmail } from '../controllers/emailControllers';
-
+import { createUser } from '../controllers/userControllers';
 const router: Router = Router();
 
-router.post('/', createEmail);
+router.post('/', createUser);
 
 export default router;
