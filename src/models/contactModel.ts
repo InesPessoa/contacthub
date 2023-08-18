@@ -39,4 +39,4 @@ const contactSchema = new Schema<IContact>({
   },
 });
 
-export const User = mongoose.model<Contact>('User', contactSchema);
+export const Contact = mongoose.model<IContact>('Contact', contactSchema);
