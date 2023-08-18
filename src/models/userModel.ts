@@ -1,49 +1,39 @@
-import mongoose, { Document, Schema, model } from 'mongoose';
-
-export interface Email {
-  email: string;
-  description?: string;
-}
-
-export interface Phone {
-  phoneNumber: number;
-  countryCode: number; //TODO: make this an Enum
-  description?: string;
-}
+import mongoose, { Schema } from 'mongoose';
+import { IContact } from './contactModel';
 
 export interface IUser {
   username: string;
-  firstName: string;
-  lastName: string;
-  bio?: string;
-  emails: Email[];
-  phones: Phone[];
-  users: IUser[];
+  userContact: IContact;
+  pendingRequestContacts?: IContact[];
+  contacts?: IContact[];
 }
 
 const userSchema = new Schema<IUser>({
   username: {
     type: String,
-    required: true,
+    required: [true, 'Please provide your username'],
     unique: true,
-    trim: true,
     lowercase: true,
   },
-  firstName: {
-    type: String,
+  userContact: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
     required: true,
   },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  bio: {
-    type: String,
-    required: false,
-  },
-  //TODO  emails and phones, validate that they are unique and valid;
-
-  //TODO add users, validate them
+  pendingRequestContacts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+    },
+  ],
+  contacts: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: false,
+    },
+  ],
 });
 
 export const User = mongoose.model<IUser>('User', userSchema);
