@@ -1,6 +1,8 @@
+import { UUID } from 'crypto';
 import mongoose, { Schema } from 'mongoose';
 
 export interface IContact {
+  _id: UUID;
   firstName: string;
   lastName: string;
   bio?: string;

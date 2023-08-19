@@ -1,12 +1,37 @@
-version: '3.8'
+version: '3'
+
+networks:
+  mongodb_net:
 
 services:
-  mongodb:
-    image: mongo:latest
-    restart: always
+
+  mongodb-primary:
+    image: 'bitnami/mongodb:latest'
+    environment:
+      - MONGODB_REPLICA_SET_NAME=my-replica-set  # Set your replica set name here
+      - MONGODB_ADVERTISED_HOSTNAME=localhost
+      - MONGODB_REPLICA_SET_MODE=primary
+      - ALLOW_EMPTY_PASSWORD=yes
     ports:
       - 27017:27017
     volumes:
-      - ./mongodb:/data/db
+      - 'mongodb_primary_data:/bitnami'
+    networks:
+      - mongodb_net
+
+  mongodb-secondary:
+    image: 'bitnami/mongodb:latest'
     environment:
-      - MONGODB_DATABASE=contacthub
+      - MONGODB_REPLICA_SET_NAME=my-replica-set  # Set your replica set name here
+      - MONGODB_REPLICA_SET_MODE=secondary
+      - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
+    volumes:
+      - 'mongodb_secondary_data:/bitnami'
+    networks:
+      - mongodb_net
+
+volumes:
+  mongodb_primary_data:
+    driver: local
+  mongodb_secondary_data:
+    driver: local

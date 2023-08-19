@@ -1,7 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
 import { IContact } from './contactModel';
+import { UUID } from 'crypto';
+import compare from 'bcrypt';
 
 export interface IUser {
+  _id: UUID;
   username: string;
   loginEmail: string;
   userContact: IContact;
@@ -60,5 +63,16 @@ const userSchema = new Schema<IUser>({
   passwordResetToken: String,
   passwordResetExpires: Date,
 });
+
+userSchema.pre('save', function (next) {
+  if (this.password === this.passwordConfirm) return next();
+});
+
+// userSchema.methods.verifyPassword = async (
+//   candidatePassword: string,
+//   userPassword: string
+// ): Promise<boolean> => {
+//   return await compare.compare(candidatePassword, userPassword);
+// };
 
 export const User = mongoose.model<IUser>('User', userSchema);
