@@ -66,6 +66,7 @@ const userSchema = new Schema<IUser>({
 
 userSchema.pre('save', function (next) {
   if (this.password === this.passwordConfirm) return next();
+  else throw new Error('Passwords are not the same');
 });
 
 // userSchema.methods.verifyPassword = async (
