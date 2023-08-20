@@ -3,6 +3,7 @@ import bodyParser from 'body-parser';
 import mongoose, { ConnectOptions } from 'mongoose';
 import dotenv from 'dotenv';
 import authRouter from './routes/authRoutes';
+import userRouter from './routes/userRoutes';
 
 // Environment variables
 dotenv.config({ path: '.env' });
@@ -27,8 +28,8 @@ app.use(bodyParser.json());
 
 const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
-//app.use('/api/v1/emails', emailRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/user', userRouter);
 
 app.listen(PORT, (): void => {
   console.log('SERVER IS UP ON PORT:', PORT);

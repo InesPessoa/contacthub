@@ -69,11 +69,4 @@ userSchema.pre('save', function (next) {
   else throw new Error('Passwords are not the same');
 });
 
-// userSchema.methods.verifyPassword = async (
-//   candidatePassword: string,
-//   userPassword: string
-// ): Promise<boolean> => {
-//   return await compare.compare(candidatePassword, userPassword);
-// };
-
 export const User = mongoose.model<IUser>('User', userSchema);

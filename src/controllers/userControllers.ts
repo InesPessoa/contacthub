@@ -2,6 +2,7 @@
 import { Request, Response } from 'express';
 import { User } from '../models/userModel';
 import { Contact } from '../models/contactModel';
+import { UserRequest } from '../types';
 
 export const createUser = async (req: Request, res: Response, next: any) => {
   try {
@@ -28,6 +29,17 @@ export const readUser = async (req: Request, res: Response): Promise<void> => {
     const user = await User.findById({ id: 1 });
     user?.populate('userContact');
     res.status(200).json({ user });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const readMe = async (
+  req: UserRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    res.status(200).json({ user: req.user });
   } catch (error) {
     throw error;
   }
