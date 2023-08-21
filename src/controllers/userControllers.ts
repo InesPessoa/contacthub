@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import { User } from '../models/userModel';
 import { Contact } from '../models/contactModel';
-import { UserRequest } from '../types';
+import { UserRequest } from '../utils/types';
 
 export const createUser = async (req: Request, res: Response, next: any) => {
   try {

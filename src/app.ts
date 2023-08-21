@@ -4,6 +4,8 @@ import mongoose, { ConnectOptions } from 'mongoose';
 import dotenv from 'dotenv';
 import authRouter from './routes/authRoutes';
 import userRouter from './routes/userRoutes';
+import { errorHandler } from './controllers/errorController';
+import { AppError } from './utils/types';
 
 // Environment variables
 dotenv.config({ path: '.env' });
@@ -30,6 +32,12 @@ const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/user', userRouter);
+
+app.all('*', (req, res, next) => {
+  next(new AppError(`can't find ${req.originalUrl} on the server!`, 404));
+});
+
+app.use(errorHandler);
 
 app.listen(PORT, (): void => {
   console.log('SERVER IS UP ON PORT:', PORT);
