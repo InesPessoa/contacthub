@@ -15,7 +15,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - 'mongodb_primary_data:/bitnami'
+      - ./docker-data/mongodb_primary_data:/bitnami
     networks:
       - mongodb_net
 
@@ -26,12 +26,15 @@ services:
       - MONGODB_REPLICA_SET_MODE=secondary
       - MONGODB_INITIAL_PRIMARY_HOST=mongodb-primary
     volumes:
-      - 'mongodb_secondary_data:/bitnami'
+      - ./docker-data/mongodb_secondary_data:/bitnami
     networks:
       - mongodb_net
 
-volumes:
-  mongodb_primary_data:
-    driver: local
-  mongodb_secondary_data:
-    driver: local
+  maildev:
+    image: maildev/maildev:latest
+    ports:
+      - 1080:1080
+      - 1025:1025
+    volumes:
+      - ./docker-data/maildev_data:/maildev
+    restart: always
