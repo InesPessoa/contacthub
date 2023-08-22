@@ -1,8 +1,8 @@
-import { IUser } from '../models/userModel';
+import { IUser, IUserModel } from '../models/userModel';
 import { Request } from 'express';
 
 export interface UserRequest extends Request {
-  user?: IUser;
+  user?: IUserModel; // Does this makes sence?
 }
 
 export class AppError extends Error {

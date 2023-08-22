@@ -1,7 +1,7 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Model, QueryWithHelpers, Schema } from 'mongoose';
 import { IContact } from './contactModel';
 import { UUID } from 'crypto';
-import compare from 'bcrypt';
+import { randomBytes, createHash } from 'crypto';
 
 export interface IUser {
   _id: UUID;
@@ -15,7 +15,11 @@ export interface IUser {
   passwordChangedAt?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Date;
+
+  createPasswordResetToken(): string;
 }
+
+export interface IUserModel extends QueryWithHelpers<IUser, IUser> {} //Does this makes sence?
 
 const userSchema = new Schema<IUser>({
   username: {
@@ -69,4 +73,13 @@ userSchema.pre('save', function (next) {
   else throw new Error('Passwords are not the same');
 });
 
-export const User = mongoose.model<IUser>('User', userSchema);
+userSchema.methods.createPasswordResetToken = function (): string {
+  const resetToken = randomBytes(32).toString('hex');
+  this.passwordResetToken = createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // works for 10 min
+  return resetToken;
+};
+
+export const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);
