@@ -49,7 +49,8 @@ class AuthService {
   async getUserByLoginEmail(
     email: string,
     includePassword: boolean
-  ): Promise<IUserModel> {
+  ): Promise<any> {
+    //Todo replace any
     // Get the user from the database
     let user;
     if (includePassword) {
@@ -64,7 +65,7 @@ class AuthService {
         HttpStatusCode.NOT_FOUND
       );
     }
-    return user as unknown as IUserModel;
+    return user;
   }
 
   compareAuthStrings(authString: string, authStringProvided: string): void {
