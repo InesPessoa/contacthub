@@ -55,13 +55,15 @@ const userSchema = new Schema<IUser>({
   ],
   password: {
     type: String,
-    required: [true, 'Please provide a password'],
+    required: [true, 'Please provide a password'], //TODO DO not foget to encrypt
     minlength: 8,
     select: false,
   },
   passwordConfirm: {
     type: String,
     required: [true, 'Please confirm your password'],
+    minlength: 8,
+    select: false,
   },
   passwordChangedAt: Date,
   passwordResetToken: String,

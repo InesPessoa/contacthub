@@ -35,6 +35,7 @@ services:
     ports:
       - 1080:1080
       - 1025:1025
+      - 587:587
     volumes:
       - ./docker-data/maildev_data:/maildev
     restart: always

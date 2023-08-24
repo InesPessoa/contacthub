@@ -10,7 +10,7 @@ import { sendEmail } from '../utils/email';
 import { authService } from '../services/authService';
 
 export const signup = catchAsync(
-  async (req: Request, res: Response, next: any) => {
+  async (req: Request, res: Response, next: any): Promise<any> => {
     // Use transactions in order to allow roolback in case of error
     const session: ClientSession = await mongoose.startSession();
     session.startTransaction();
@@ -20,8 +20,9 @@ export const signup = catchAsync(
       });
       req.body.userContact = newContact._id;
       const [newUser] = await User.create([req.body], { session });
-      const token = authService.createToken(newUser._id, next);
-      authService.saveToken(token, res);
+      const token = authService.createToken(newUser._id);
+      const cookieOptions = authService.generateCookieOptions(token);
+      res.cookie('jwt', token, cookieOptions);
       // If everything goes well commit transactions
       await session.commitTransaction();
       // Ending the session
@@ -32,8 +33,11 @@ export const signup = catchAsync(
       await session.abortTransaction();
       session.endSession();
       // Send the error
-      return next(
-        new AppError('Error signup: ' + (error as Error).message, 500)
+      next(
+        new AppError(
+          'Error signup: ' + (error as Error).message,
+          HttpStatusCode.INTERNAL_SERVER_ERROR
+        )
       );
     }
   }
@@ -49,8 +53,9 @@ export const login = catchAsync(
     // Check if user exists and password is correct
     authService.compareAuthStrings(user.password, password);
     // If everything is ok, send token to client
-    const token = authService.createToken(user._id, res);
-    authService.saveToken(token, res);
+    const token = authService.createToken(user._id);
+    const cookieOptions = authService.generateCookieOptions(token);
+    res.cookie('jwt', token, cookieOptions);
     res.status(201).json({ message: 'New Token Generated!', token });
   }
 );
@@ -67,14 +72,14 @@ export const forgotPassword = catchAsync(
     )}/api/v1/users/resetPassword/${resetToken}`;
     const message = `Forgot your password? Submit a PATCH request with your new password and
   passwordConfirm to: ${resetURL}.\nIf you didn't forget your password, please ignore this email.`;
-
     try {
-      await sendEmail({
-        emailFrom: process.env.EMAIL_FROM as string,
-        emailTo: user.loginEmail,
-        subject: 'Your password reset token (valid for 10 min)',
-        message,
-      });
+      await sendEmail(
+        process.env.EMAIL_FROM as string,
+        user.loginEmail,
+        'Your password reset token (valid for 10 min)',
+        message
+      );
+      user.save();
       res.status(200).json({
         status: 'sucess',
         message: 'Token sent to email!',
@@ -82,26 +87,29 @@ export const forgotPassword = catchAsync(
     } catch (err) {
       user.passwordResetToken = undefined;
       user.passwordResetExpires = undefined;
-      return next(
+      user.save();
+      next(
         new AppError(
           'There was an error sending the email: ' + (err as Error).message,
-          500
+          HttpStatusCode.INTERNAL_SERVER_ERROR
         )
       );
     }
   }
 );
 
-export const updatePassword = catchAsync(
+export const resetPassword = catchAsync(
   async (req: UserRequest, res: Response, next: any) => {
     //Get user
     const user = await authService.getUserByLoginEmail(req.body.email, false);
     //Check if the recover token is still valid
     authService.verifyExpirationDate(user.passwordResetExpires);
     //Check if the recoverToken is correct
+    console.log('conpare tokens');
+    console.log(user.passwordResetToken, req.params.resetPasswordToken);
     authService.compareAuthStrings(
       user.passwordResetToken as string,
-      req.body.token //Todo change to query parameters
+      req.params.resetPasswordToken as string //Todo change to query parameters
     );
     //Compare new passwords provided
     authService.compareAuthStrings(req.body.password, req.body.passwordConfirm);
@@ -111,8 +119,9 @@ export const updatePassword = catchAsync(
     //save
     await user.save(); //Todo check if this is the correct way to save
     // If everything is ok, send token to client
-    const token = authService.createToken(user._id, res);
-    authService.saveToken(token, res);
+    const token = authService.createToken(user._id);
+    const cookieOptions = authService.generateCookieOptions(token);
+    res.cookie('jwt', token, cookieOptions);
     res
       .status(201)
       .json({ message: 'Password changed and new token generated!', token });
