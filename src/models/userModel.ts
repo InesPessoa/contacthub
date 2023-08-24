@@ -15,6 +15,7 @@ export interface IUser {
   passwordChangedAt?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Number; //TODO: Check if this is the correct type
+  //Todo add roles
 }
 
 export interface IUserModel extends QueryWithHelpers<IUser, IUser> {} //Does this makes sence?

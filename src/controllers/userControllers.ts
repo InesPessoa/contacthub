@@ -1,9 +1,9 @@
-//make CRUD Controllers for email
 import { Request, Response } from 'express';
 import { User } from '../models/userModel';
 import { Contact } from '../models/contactModel';
 import { UserRequest } from '../utils/types';
 
+//TODO only allowed for admin
 export const createUser = async (req: Request, res: Response, next: any) => {
   try {
     const newContact = await Contact.create(req.body.userContact);
@@ -15,7 +15,11 @@ export const createUser = async (req: Request, res: Response, next: any) => {
   }
 };
 
-export const readUsers = async (req: Request, res: Response): Promise<void> => {
+//TODO only allowed for admin
+export const readAllUsers = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const users = await User.find();
     res.status(200).json({ users });
@@ -24,7 +28,11 @@ export const readUsers = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const readUser = async (req: Request, res: Response): Promise<void> => {
+//TODO only allowed for admin
+export const readUserById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const user = await User.findById({ id: 1 });
     user?.populate('userContact');
@@ -34,13 +42,18 @@ export const readUser = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const readMe = async (
+//Todo delete user, only allowed for admim
+
+export const readUserMe = async (
   req: UserRequest,
   res: Response
 ): Promise<void> => {
   try {
-    res.status(200).json({ user: req.user });
+    res.status(200).json({ user: req.user }); //Use standart response
   } catch (error) {
     throw error;
   }
 };
+
+//Todo update user me
+//Todo delete user me
