@@ -14,9 +14,7 @@ export interface IUser {
   passwordConfirm: string;
   passwordChangedAt?: Date;
   passwordResetToken?: string;
-  passwordResetExpires?: Date;
-
-  createPasswordResetToken(): string;
+  passwordResetExpires?: Number; //TODO: Check if this is the correct type
 }
 
 export interface IUserModel extends QueryWithHelpers<IUser, IUser> {} //Does this makes sence?
@@ -67,21 +65,12 @@ const userSchema = new Schema<IUser>({
   },
   passwordChangedAt: Date,
   passwordResetToken: String,
-  passwordResetExpires: Date,
+  passwordResetExpires: Number,
 });
 
 userSchema.pre('save', function (next) {
   if (this.password === this.passwordConfirm) return next();
   else throw new Error('Passwords are not the same');
 });
-
-userSchema.methods.createPasswordResetToken = function (): string {
-  const resetToken = randomBytes(32).toString('hex');
-  this.passwordResetToken = createHash('sha256')
-    .update(resetToken)
-    .digest('hex');
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // works for 10 min
-  return resetToken;
-};
 
 export const User: Model<IUser> = mongoose.model<IUser>('User', userSchema);

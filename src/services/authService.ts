@@ -1,7 +1,7 @@
 import { HttpStatusCode } from '../enums/httpStatusCode';
 import { User } from '../models/userModel';
 import { AppError } from '../utils/types';
-import { UUID } from 'crypto';
+import { UUID, createHash, randomBytes } from 'crypto';
 import jwt, { Secret } from 'jsonwebtoken';
 import process from 'process';
 import { CookieOptions, Response } from 'express';
@@ -11,6 +11,15 @@ class AuthService {
     return jwt.sign({ id }, process.env.JWT_SECRET as Secret, {
       expiresIn: process.env.JWT_EXPIRES_IN,
     });
+  };
+
+  createPasswordResetToken = () => {
+    const resetToken = randomBytes(32).toString('hex');
+    const passwordResetToken = createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+    const passwordResetExpires = Date.now() + 10 * 60 * 1000; // works for 10 min
+    return { passwordResetToken, passwordResetExpires };
   };
 
   generateCookieOptions = (token: String) => {
