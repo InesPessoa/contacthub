@@ -1,8 +1,9 @@
 import { Schema } from 'mongoose';
 import { Request } from 'express';
+import { IUser } from '../models/userModel';
 
 export interface UserRequest extends Request {
-  user?: Schema; // Does this makes sence?
+  user?: IUser; // Does this makes sence?
 }
 
 export class AppError extends Error {

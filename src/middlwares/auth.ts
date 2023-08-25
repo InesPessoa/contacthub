@@ -24,7 +24,7 @@ export const protect = catchAsync(
         return next(
           new AppError(
             'Error decoding the token: ' + (error as Error).message,
-            HttpStatusCode.UNOUTHORIZED
+            HttpStatusCode.UNAUTHORIZED
           )
         );
       }
@@ -33,7 +33,7 @@ export const protect = catchAsync(
       if (!req.user) {
         new AppError(
           'The user belonging to this token does no longer exist!',
-          HttpStatusCode.UNOUTHORIZED
+          HttpStatusCode.UNAUTHORIZED
         );
       }
       next();
@@ -41,9 +41,23 @@ export const protect = catchAsync(
       next(
         new AppError(
           'You are not logged in! Please log in to get a token!',
-          HttpStatusCode.UNOUTHORIZED
+          HttpStatusCode.UNAUTHORIZED
         )
       );
     }
   }
 );
+
+export const restrictedTo = (...roles: Array<string>) => {
+  return (req: UserRequest, res: Response, next: any) => {
+    if (!roles.includes(req.user?.role as string)) {
+      return next(
+        new AppError(
+          'You do not have permissions to perform this action',
+          HttpStatusCode.FORBIDDEN
+        )
+      );
+    }
+    next();
+  };
+};

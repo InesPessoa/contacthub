@@ -91,7 +91,7 @@ class AuthService {
       if ((expirationDate as Date) < new Date()) {
         throw new AppError(
           'The token has expired!',
-          HttpStatusCode.UNOUTHORIZED
+          HttpStatusCode.UNAUTHORIZED
         );
       }
       throw new AppError(

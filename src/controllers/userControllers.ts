@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { User } from '../models/userModel';
+import { IUser, User } from '../models/userModel';
 import { Contact } from '../models/contactModel';
 import { UserRequest } from '../utils/types';
+import { paginate } from '../utils/paginate';
 
-//TODO only allowed for admin
 export const createUser = async (req: Request, res: Response, next: any) => {
   try {
     const newContact = await Contact.create(req.body.userContact);
@@ -15,26 +15,25 @@ export const createUser = async (req: Request, res: Response, next: any) => {
   }
 };
 
-//TODO only allowed for admin
 export const readAllUsers = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const users = await User.find();
+    const { skip, limit } = paginate(req.query);
+    let users = await User.find().skip(skip).limit(limit);
     res.status(200).json({ users });
   } catch (error) {
     throw error;
   }
 };
 
-//TODO only allowed for admin
 export const readUserById = async (
   req: Request,
   res: Response
 ): Promise<void> => {
   try {
-    const user = await User.findById({ id: 1 });
+    const user = await User.findById({ id: req.params.id });
     user?.populate('userContact');
     res.status(200).json({ user });
   } catch (error) {
@@ -42,18 +41,37 @@ export const readUserById = async (
   }
 };
 
-//Todo delete user, only allowed for admim
-
 export const readUserMe = async (
   req: UserRequest,
   res: Response
 ): Promise<void> => {
   try {
-    res.status(200).json({ user: req.user }); //Use standart response
+    res.status(200).json({ user: req.user });
   } catch (error) {
     throw error;
   }
 };
 
-//Todo update user me
-//Todo delete user me
+export const updateUserMe = async (
+  req: UserRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    const user = (req.user as IUser).updateOne(req.body);
+    res.status(200).json({ user });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteUserMe = async (
+  req: UserRequest,
+  res: Response
+): Promise<void> => {
+  try {
+    (req.user as IUser).deleteOne();
+    res.status(200).json({ message: 'User deleted!' });
+  } catch (error) {
+    throw error;
+  }
+};

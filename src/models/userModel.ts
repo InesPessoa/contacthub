@@ -1,11 +1,10 @@
 import mongoose, { Model, QueryWithHelpers, Schema } from 'mongoose';
 import { IContact } from './contactModel';
 import { UUID } from 'crypto';
-import { randomBytes, createHash } from 'crypto';
+import { Roles } from '../enums/roles';
 
-export interface IUser {
+export interface IUser extends mongoose.Document {
   _id: UUID;
-  username: string;
   loginEmail: string;
   userContact: IContact;
   pendingRequestContacts?: IContact[];
@@ -15,23 +14,18 @@ export interface IUser {
   passwordChangedAt?: Date;
   passwordResetToken?: string;
   passwordResetExpires?: Number; //TODO: Check if this is the correct type
-  //Todo add roles
+  role: Roles;
 }
 
 export interface IUserModel extends QueryWithHelpers<IUser, IUser> {} //Does this makes sence?
 
 const userSchema = new Schema<IUser>({
-  username: {
-    type: String,
-    required: [true, 'Please provide your username'],
-    unique: true,
-    lowercase: true,
-  },
   loginEmail: {
     type: String,
     required: [true, 'Please provide a login email'],
     unique: true,
     lowercase: true,
+    immutable: true,
   },
   userContact: {
     type: Schema.Types.ObjectId,
@@ -52,6 +46,12 @@ const userSchema = new Schema<IUser>({
       required: false,
     },
   ],
+  role: {
+    type: String,
+    enum: Object.values(Roles),
+    default: Roles.USER,
+    immutable: true,
+  },
   password: {
     type: String,
     required: [true, 'Please provide a password'], //TODO DO not foget to encrypt
