@@ -1,7 +1,7 @@
 import jwt, { JwtPayload, Secret } from 'jsonwebtoken';
 import process from 'process';
 import { Response } from 'express';
-import { User } from '../models/userModel';
+import { IUser, User } from '../models/userModel';
 import { AppError, UserRequest } from '../utils/types';
 import { catchAsync } from '../utils/catchAsync';
 import { HttpStatusCode } from '../enums/httpStatusCode';
@@ -29,7 +29,7 @@ export const protect = catchAsync(
         );
       }
       // Check if user still exists
-      req.user = (await User.findById(decoded.id))?.toJSON();
+      req.user = (await User.findById(decoded.id)) as IUser; //Trodo add population
       if (!req.user) {
         new AppError(
           'The user belonging to this token does no longer exist!',
@@ -51,7 +51,7 @@ export const protect = catchAsync(
 export const restrictedTo = (...roles: Array<string>) => {
   return (req: UserRequest, res: Response, next: any) => {
     if (!roles.includes(req.user?.role as string)) {
-      return next(
+      next(
         new AppError(
           'You do not have permissions to perform this action',
           HttpStatusCode.FORBIDDEN

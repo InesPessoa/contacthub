@@ -7,7 +7,6 @@ export interface IUser extends mongoose.Document {
   _id: UUID;
   loginEmail: string;
   userContact: IContact;
-  pendingRequestContacts?: IContact[];
   contacts?: IContact[];
   password: string;
   passwordConfirm: string;
@@ -32,13 +31,6 @@ const userSchema = new Schema<IUser>({
     ref: 'User',
     required: true,
   },
-  pendingRequestContacts: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'User',
-      required: false,
-    },
-  ],
   contacts: [
     {
       type: Schema.Types.ObjectId,

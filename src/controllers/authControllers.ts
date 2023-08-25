@@ -18,7 +18,7 @@ export const signup = catchAsync(
       const [newContact] = await Contact.create([req.body.userContact], {
         session,
       });
-      req.body.userContact = newContact._id;
+      req.body = { ...req.body, userContact: newContact._id };
       const [newUser] = await User.create([req.body], { session });
       const token = authService.createToken(newUser._id);
       const cookieOptions = authService.generateCookieOptions(token);
