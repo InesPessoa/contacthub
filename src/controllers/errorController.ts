@@ -7,7 +7,7 @@ export const errorHandler = (
   res: Response,
   next: any
 ) => {
-  res.status(200).json({
+  res.status(err.statusCode || 200).json({
     status: err.status,
     error: err,
     message: err.message,
