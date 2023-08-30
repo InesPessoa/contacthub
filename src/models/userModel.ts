@@ -28,13 +28,13 @@ const userSchema = new Schema<IUser>({
   },
   userContact: {
     type: Schema.Types.ObjectId,
-    ref: 'User',
+    ref: 'Contact',
     required: true,
   },
   contacts: [
     {
       type: Schema.Types.ObjectId,
-      ref: 'User',
+      ref: 'Contact',
       required: false,
     },
   ],

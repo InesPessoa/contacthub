@@ -29,7 +29,9 @@ export const protect = catchAsync(
         );
       }
       // Check if user still exists
-      req.user = (await User.findById(decoded.id)) as IUser; //Trodo add population
+      req.user = (await User.findOne({ _id: decoded.id })
+        .populate('userContact')
+        .exec()) as IUser; //Trodo add population
       if (!req.user) {
         new AppError(
           'The user belonging to this token does no longer exist!',

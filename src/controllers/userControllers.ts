@@ -24,8 +24,9 @@ export const readAllUsers = catchAsync(
 
 export const readUserById = catchAsync(
   async (req: Request, res: Response): Promise<void> => {
-    const user = await User.findById({ id: req.params.id });
-    user?.populate('userContact'); //TODO HANDLE POPULATE
+    const user = await User.findById({ id: req.params.id })
+      .populate('userContact')
+      .exec();
     res.status(200).json({ user });
   }
 );
@@ -45,7 +46,7 @@ export const updateUserMe = catchAsync(
       ); //TODO HANDLE CREATE ON CONTACT, rollback if error
       delete req.body.userContact;
     }
-    const user = (req.user as IUser).updateOne(req.body); //TODO HANDLE UPDATE ON CONTACT, rollback if error
+    const user = await User.findByIdAndUpdate(req.user?._id, req.body); //TODO HANDLE UPDATE ON CONTACT, rollback if error
     res.status(200).json({ message: 'User updated', user });
   }
 );
