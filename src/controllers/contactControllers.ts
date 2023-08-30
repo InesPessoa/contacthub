@@ -51,10 +51,9 @@ export const readContactById = catchAsync(
 export const updateContactById = catchAsync(
   async (req: UserRequest, res: Response): Promise<void> => {
     try {
-      let contact = await Contact.findById({ _id: req.params.id });
-      contact = { ...contact, ...req.body };
-      contact?.save();
-      res.status(200).json({ contact });
+      await Contact.findOneAndUpdate({ _id: req.params.id }, req.body);
+      const contact = await Contact.findById({ _id: req.params.id });
+      res.status(200).json({ message: "User's contact updated!", contact });
     } catch (error) {
       throw new AppError(
         (error as Error).message,

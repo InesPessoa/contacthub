@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { verifyContact } from '../middlwares/contact';
+import { restrictedTo } from '../middlwares/auth';
 import {
   deleteContactById,
   readAllContacts,
@@ -13,7 +13,7 @@ const router: Router = Router();
 router.get('/', protect, readAllContacts);
 router.get('/me', protect, readMyContact);
 router.get('/:id', protect, readContactById);
-router.patch('/:id', protect, verifyContact, updateContactById);
-router.delete('/:id', protect, verifyContact, deleteContactById);
+router.patch('/:id', protect, restrictedTo('admin'), updateContactById);
+router.delete('/:id', protect, restrictedTo('admin'), deleteContactById);
 
 export default router;

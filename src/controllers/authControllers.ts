@@ -108,8 +108,6 @@ export const resetPassword = catchAsync(
     //Check if the recover token is still valid
     authService.verifyExpirationDate(user.passwordResetExpires);
     //Check if the recoverToken is correct
-    console.log('conpare tokens');
-    console.log(user.passwordResetToken, req.params.resetPasswordToken);
     authService.compareAuthStrings(
       user.passwordResetToken as string,
       req.params.resetPasswordToken as string //Todo change to query parameters
